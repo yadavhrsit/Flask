@@ -21,32 +21,40 @@ def index():
     return jsonify(message="Welcome to the e-commerce application!")
 
 
-# Products
-
-
+# Products APIs
 @app.route("/products", methods=["GET"])
 def get_products():
     products = list(products_collection.find({}, {"_id": 0}))
-    return jsonify(products=products)
+    if products:
+        return jsonify(products=products)
+    else:
+        return jsonify("No Products in Database")
 
 
 @app.route("/products", methods=["POST"])
 def add_product():
     product = request.get_json()
-    products_collection.insert_one(product)
-    return jsonify(message=f"Product '{product['ProductName']}' added successfully!")
+    if product:
+        products_collection.insert_one(product)
+        return jsonify(
+            message=f"Product '{product['ProductName']}' added successfully!"
+        )
+    else:
+        return jsonify(
+            message="Unable to Add Product", reason="No Products Data Provided"
+        )
 
 
-# Cart
+# Cart APIs
 @app.route("/cart", methods=["GET"])
 def get_cart():
     cart = list(cart_collection.find({}, {"_id": 0}))
-    if len(cart) == 0:
-        return jsonify(message="Empty Cart")
-    else:
+    if cart:
         total = 0
         for item in cart:
             total += int(item["Price"])
+    else:
+        return jsonify(message="Your Cart is Empty")
     return jsonify(Cart_Items=cart, Cart_Total_Value=total)
 
 
@@ -68,7 +76,7 @@ def clear_cart():
     return jsonify(message="All items have been Removed from the Cart")
 
 
-# Order
+# Orders APIs
 @app.route("/orders", methods=["GET"])
 def get_orders():
     orders = list(orders_collection.find({}, {"_id": 0}))
