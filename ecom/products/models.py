@@ -1,0 +1,17 @@
+from pymongo import MongoClient
+from bson import ObjectId
+
+client = MongoClient(
+    "mongodb+srv://harshityadav:JxsV3y4V7mWl8g1I@cluster0.s9trpdc.mongodb.net/"
+)
+db = client["Ecommerce"]
+
+
+def to_json(product):
+    return {
+        "id": str(product["_id"]),
+        "Name": product["Product_Name"],
+        "Price": product["Price"],
+        "Img_Url": product["Img_Url"],
+        "pId": product["pId"],
+    }
